@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 엑셀 병합기
 
-## Getting Started
+여러 개로 흩어진 엑셀(.xlsx, .xls) / CSV 파일을 업로드하면 자동으로 헤더를 인식해서 하나로 합쳐주는 웹 서비스입니다.
 
-First, run the development server:
+**서비스 바로가기**: https://excel-merge-kappa.vercel.app
+
+## 핵심 기능
+
+- 여러 파일 드래그 앤 드롭 업로드 (파일 개수 무제한, 파일당 3,000행)
+- 파일마다 컬럼 순서/이름이 달라도 자동으로 헤더를 인식해서 병합
+- 완전히 동일한 행 자동 중복 제거 (옵션)
+- 완전히 빈 컬럼 자동 제거 (옵션)
+- 병합 결과 미리보기 + 파일명 지정 후 `.xlsx` 다운로드
+
+## 왜 안전한가요
+
+파일은 서버로 전송되지 않고 **브라우저 안에서만 처리**됩니다. 회사/개인 데이터가 외부로 나가지 않아요.
+
+## 기술 스택
+
+- [Next.js](https://nextjs.org) (App Router)
+- [SheetJS (xlsx)](https://sheetjs.com/) — 브라우저 내 엑셀 파싱/병합
+- Tailwind CSS
+- Vercel (배포)
+
+## 로컬 개발
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[http://localhost:3000](http://localhost:3000) 에서 확인할 수 있습니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 피드백 / 버그 제보
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+앱 하단의 "피드백 / 버그 제보하기" 링크를 통해 남겨주세요.
