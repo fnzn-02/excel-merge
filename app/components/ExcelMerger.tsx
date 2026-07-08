@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import { track } from "@vercel/analytics";
 import {
   buildXlsxBlob,
   mergeParsedFiles,
@@ -8,7 +9,7 @@ import {
   type ParsedFile,
 } from "@/lib/excel";
 
-const MAX_FREE_ROWS_PER_FILE = 3000;
+const MAX_FREE_ROWS_PER_FILE = 10000;
 const ACCEPTED_EXTENSIONS = [".xlsx", ".xls", ".csv"];
 const PREVIEW_ROW_LIMIT = 50;
 
@@ -29,8 +30,9 @@ export default function ExcelMerger() {
 
   const emptyColumnNames = useMemo(() => {
     if (!rawMergeResult || rawMergeResult.rows.length === 0) return [];
+    // 숫자 0은 falsy지만 "빈 값"이 아니므로, 빈 문자열인지만 정확히 검사한다.
     return rawMergeResult.headers.filter((_, i) =>
-      rawMergeResult.rows.every((row) => !row[i])
+      rawMergeResult.rows.every((row) => row[i] === "")
     );
   }, [rawMergeResult]);
 
@@ -90,6 +92,10 @@ export default function ExcelMerger() {
     a.download = `${safeName}.xlsx`;
     a.click();
     URL.revokeObjectURL(url);
+    track("다운로드 완료", {
+      파일수: files.length,
+      행수: mergeResult.rows.length,
+    });
   };
 
   return (

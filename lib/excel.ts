@@ -1,15 +1,17 @@
 import * as XLSX from "xlsx";
 
+export type Cell = string | number;
+
 export type ParsedFile = {
   name: string;
   headers: string[];
-  rows: string[][];
+  rows: Cell[][];
   truncated: boolean;
 };
 
 export type MergeResult = {
   headers: string[];
-  rows: string[][];
+  rows: Cell[][];
   duplicatesRemoved: number;
 };
 
@@ -17,6 +19,22 @@ const normalizeHeader = (h: string) => h.trim();
 
 const cellToString = (v: unknown): string => {
   if (v === null || v === undefined) return "";
+  return String(v);
+};
+
+const formatDate = (d: Date): string => {
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+};
+
+// 날짜 셀은 읽을 수 있는 날짜 문자열로, 숫자 셀은 실제 숫자 그대로 유지한다.
+// (숫자를 문자열로 바꿔버리면 다운로드한 파일에서 SUM/자동합계가 깨짐)
+const normalizeCellValue = (v: unknown): Cell => {
+  if (v === null || v === undefined) return "";
+  if (v instanceof Date) return formatDate(v);
+  if (typeof v === "number") return v;
   return String(v);
 };
 
@@ -53,13 +71,14 @@ export async function parseFile(
   if (!hasValidBinarySignature(new Uint8Array(buffer), file.name)) {
     throw new Error(`"${file.name}" 파일이 손상되었거나 올바른 엑셀 파일이 아니에요.`);
   }
-  const workbook = XLSX.read(buffer, { type: "array" });
+  // cellDates: true로 읽으면 날짜 서식이 있는 셀만 JS Date로 들어오고,
+  // 일반 숫자(통화 포함)는 그대로 숫자로 남아서 SUM이 계속 작동한다.
+  const workbook = XLSX.read(buffer, { type: "array", cellDates: true });
   const firstSheetName = workbook.SheetNames[0];
   const sheet = workbook.Sheets[firstSheetName];
   const raw = XLSX.utils.sheet_to_json<unknown[]>(sheet, {
     header: 1,
     blankrows: false,
-    raw: false, // 날짜/통화/퍼센트 등 원본에 표시된 형식 그대로 문자열로 가져옴 (엑셀 내부 일련번호 방지)
   });
 
   if (raw.length === 0) {
@@ -72,7 +91,9 @@ export async function parseFile(
   );
   const truncated = dataRows.length > maxRows;
   const limitedRows = dataRows.slice(0, maxRows);
-  const rows = limitedRows.map((row) => headers.map((_, i) => cellToString(row[i])));
+  const rows = limitedRows.map((row) =>
+    headers.map((_, i) => normalizeCellValue(row[i]))
+  );
 
   return { name: file.name, headers, rows, truncated };
 }
@@ -94,11 +115,11 @@ export function mergeParsedFiles(
     }
   }
 
-  const allRows: string[][] = [];
+  const allRows: Cell[][] = [];
   for (const f of files) {
     const colMap = f.headers.map((h) => headerIndex.get(h));
     for (const row of f.rows) {
-      const newRow = new Array(headerOrder.length).fill("");
+      const newRow: Cell[] = new Array(headerOrder.length).fill("");
       row.forEach((cell, i) => {
         const idx = colMap[i];
         if (idx !== undefined) newRow[idx] = cell;
@@ -126,7 +147,7 @@ export function mergeParsedFiles(
   return { headers: headerOrder, rows: finalRows, duplicatesRemoved };
 }
 
-export function buildXlsxBlob(headers: string[], rows: string[][]): Blob {
+export function buildXlsxBlob(headers: string[], rows: Cell[][]): Blob {
   const sheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, sheet, "병합결과");
