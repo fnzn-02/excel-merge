@@ -101,7 +101,7 @@ export default function ExcelMerger() {
   return (
     <div className="w-full max-w-3xl mx-auto px-6 py-16 flex flex-col gap-8">
       <header className="flex flex-col gap-3 text-center sm:text-left">
-        <h1 className="text-2xl font-semibold tracking-tight">엑셀 병합기</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">엑셀 병합</h1>
         <p className="text-zinc-600 dark:text-zinc-400">
           여러 엑셀 파일을 업로드하면 자동으로 하나로 합쳐드려요.
         </p>
@@ -287,16 +287,6 @@ export default function ExcelMerger() {
         </div>
       )}
 
-      <footer className="mt-8 flex justify-center sm:justify-start">
-        <a
-          href="https://forms.gle/ncQJpfoJxKpTMuP9A"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sm text-zinc-500 underline decoration-zinc-300 underline-offset-4 hover:text-zinc-700 dark:decoration-zinc-700 dark:hover:text-zinc-300"
-        >
-          피드백 / 버그 제보하기
-        </a>
-      </footer>
     </div>
   );
 }
