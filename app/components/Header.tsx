@@ -38,6 +38,12 @@ export default function Header() {
               >
                 엑셀 분할
               </Link>
+              <Link
+                href="/excel/clean"
+                className="block px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+              >
+                엑셀 데이터 클리너
+              </Link>
             </div>
           </div>
         </nav>

@@ -8,6 +8,7 @@ import {
   parseFile,
   type ParsedFile,
 } from "@/lib/excel";
+import { findEmptyColumns, removeColumns } from "@/lib/clean";
 
 const MAX_FREE_ROWS_PER_FILE = 10000;
 const ACCEPTED_EXTENSIONS = [".xlsx", ".xls", ".csv"];
@@ -29,24 +30,19 @@ export default function ExcelMerger() {
   }, [files, dedupe]);
 
   const emptyColumnNames = useMemo(() => {
-    if (!rawMergeResult || rawMergeResult.rows.length === 0) return [];
-    // 숫자 0은 falsy지만 "빈 값"이 아니므로, 빈 문자열인지만 정확히 검사한다.
-    return rawMergeResult.headers.filter((_, i) =>
-      rawMergeResult.rows.every((row) => row[i] === "")
-    );
+    if (!rawMergeResult) return [];
+    return findEmptyColumns(rawMergeResult.headers, rawMergeResult.rows);
   }, [rawMergeResult]);
 
   const mergeResult = useMemo(() => {
     if (!rawMergeResult) return null;
     if (!removeEmptyColumns || emptyColumnNames.length === 0) return rawMergeResult;
-    const keepIndices = rawMergeResult.headers
-      .map((_, i) => i)
-      .filter((i) => !emptyColumnNames.includes(rawMergeResult.headers[i]));
-    return {
-      ...rawMergeResult,
-      headers: keepIndices.map((i) => rawMergeResult.headers[i]),
-      rows: rawMergeResult.rows.map((row) => keepIndices.map((i) => row[i])),
-    };
+    const { headers, rows } = removeColumns(
+      rawMergeResult.headers,
+      rawMergeResult.rows,
+      emptyColumnNames
+    );
+    return { ...rawMergeResult, headers, rows };
   }, [rawMergeResult, removeEmptyColumns, emptyColumnNames]);
 
   const handleFileList = async (fileList: FileList) => {
