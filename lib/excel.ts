@@ -147,10 +147,14 @@ export function mergeParsedFiles(
   return { headers: headerOrder, rows: finalRows, duplicatesRemoved };
 }
 
-export function buildXlsxBlob(headers: string[], rows: Cell[][]): Blob {
+export function buildXlsxBlob(
+  headers: string[],
+  rows: Cell[][],
+  sheetName = "Sheet1"
+): Blob {
   const sheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
   const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, sheet, "병합결과");
+  XLSX.utils.book_append_sheet(workbook, sheet, sheetName);
   const arrayBuffer = XLSX.write(workbook, {
     type: "array",
     bookType: "xlsx",

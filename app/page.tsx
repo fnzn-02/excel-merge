@@ -27,6 +27,22 @@ export default function Home() {
               시작하기 →
             </span>
           </Link>
+
+          <Link
+            href="/excel/split"
+            className="group flex flex-col gap-2 rounded-2xl border border-zinc-200 p-6 transition-colors hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
+          >
+            <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+              엑셀
+            </span>
+            <span className="text-lg font-semibold">엑셀 분할</span>
+            <span className="text-sm text-zinc-500">
+              하나의 엑셀 파일을 기준에 따라 여러 파일로 나눠요
+            </span>
+            <span className="mt-2 text-sm font-medium text-zinc-900 group-hover:underline dark:text-zinc-100">
+              시작하기 →
+            </span>
+          </Link>
         </div>
       </div>
     </div>

@@ -84,7 +84,7 @@ export default function ExcelMerger() {
 
   const handleDownload = () => {
     if (!mergeResult) return;
-    const blob = buildXlsxBlob(mergeResult.headers, mergeResult.rows);
+    const blob = buildXlsxBlob(mergeResult.headers, mergeResult.rows, "병합결과");
     const url = URL.createObjectURL(blob);
     const safeName = outputFilename.trim().replace(/[\\/:*?"<>|]/g, "") || "병합결과";
     const a = document.createElement("a");

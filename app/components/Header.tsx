@@ -32,6 +32,12 @@ export default function Header() {
               >
                 엑셀 병합
               </Link>
+              <Link
+                href="/excel/split"
+                className="block px-4 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+              >
+                엑셀 분할
+              </Link>
             </div>
           </div>
         </nav>
